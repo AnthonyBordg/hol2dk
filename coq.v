@@ -1312,9 +1312,26 @@ Qed.
 Definition list' (A : Type') := {| type := list A; el := nil |}.
 Canonical list'.
 
-Definition FCONS {A : Type'} := 
-@ε ((prod nat (prod nat (prod nat (prod nat nat)))) -> A -> (nat -> A) -> nat -> A) 
+Definition FCONS {A : Type'} (a : A) (f: nat -> A) (n : nat) : A :=
+match n with 
+| 0 => a
+| S n => f n
+end.  
+
+Lemma FCONS_def {A : Type'} :
+  @FCONS A = @ε ((prod nat (prod nat (prod nat (prod nat nat)))) -> A -> (nat -> A) -> nat -> A) 
 (fun FCONS' : (prod nat (prod nat (prod nat (prod nat nat)))) -> A -> (nat -> A) -> nat -> A => forall _17460 : prod nat (prod nat (prod nat (prod nat nat))), (forall a : A, forall f : nat -> A, (FCONS' _17460 a f (NUMERAL 0)) = a) /\ (forall a : A, forall f : nat -> A, forall n : nat, (FCONS' _17460 a f (S n)) = (f n))) (@pair nat (prod nat (prod nat (prod nat nat))) (NUMERAL (BIT0 (BIT1 (BIT1 (BIT0 (BIT0 (BIT0 (BIT1 0)))))))) (@pair nat (prod nat (prod nat nat)) (NUMERAL (BIT1 (BIT1 (BIT0 (BIT0 (BIT0 (BIT0 (BIT1 0)))))))) (@pair nat (prod nat nat) (NUMERAL (BIT1 (BIT1 (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 0)))))))) (@pair nat nat (NUMERAL (BIT0 (BIT1 (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 0)))))))) (NUMERAL (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 (BIT0 (BIT1 0)))))))))))).
+Proof.
+  generalize (NUMERAL (BIT0 (BIT1 (BIT1 (BIT0 (BIT0 (BIT0 (BIT1 0))))))), 
+    (NUMERAL (BIT1 (BIT1 (BIT0 (BIT0 (BIT0 (BIT0 (BIT1 0))))))), 
+      (NUMERAL (BIT1 (BIT1 (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 0))))))), 
+        (NUMERAL (BIT0 (BIT1 (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 0))))))), 
+          NUMERAL (BIT1 (BIT1 (BIT0 (BIT0 (BIT1 (BIT0 (BIT1 0))))))))))); intro p.
+  apply fun_ext. intro a. apply fun_ext. intro f. apply fun_ext. intro n.
+  match goal with [|- _ = ε ?x _ _ _ _] => set (Q := x) end. 
+  assert (i : exists q, Q q). exists (fun _ => @FCONS A). unfold Q. intro. auto.
+  generalize (ε_spec i). intro H. destruct n. simpl. symmetry. apply H. simpl. symmetry. apply H.
+Qed.
 
 Fixpoint _dest_list {A : Type'} l :=
   match l with
@@ -1329,7 +1346,7 @@ Definition _mk_list : forall {A : Type'}, (recspace A) -> list A :=
 fun A r => ε (_mk_list_pred r).
 
 Lemma FCONS_0 {A : Type'} (a : A) (f : nat -> A) : FCONS a f (NUMERAL 0) = a.
-Proof. Admitted.      
+Proof. reflexivity. Qed.       
 
 Lemma _dest_list_inj : forall {A : Type'} (l l' : list A), _dest_list l = _dest_list l' -> l = l'.
 Proof.
@@ -1742,8 +1759,6 @@ Definition hreal' : Type' := {| type := hreal ; el := nonnegative_0|}.
 
 Definition dest_hreal : hreal -> nadd -> Prop := 
 fun r f => exists B : nat, forall n : nat, (Rabs ((INR (dest_nadd f n)/ INR n) - proj1_sig r)) < INR B/INR n. 
-
-
 
 
 
