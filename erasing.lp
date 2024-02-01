@@ -175,6 +175,7 @@ builtin "INR_def" ≔ INR_def;
 builtin "nil" ≔ NIL;
 builtin "cons" ≔ CONS;
 builtin "list" ≔ list;
+builtin "FCONS_def" ≔ FCONS_def;
 builtin "_dest_list" ≔ dest_list;
 builtin "_mk_list" ≔ _mk_list;
 builtin "axiom_15" ≔ axiom_15;
