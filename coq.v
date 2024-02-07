@@ -1672,11 +1672,9 @@ Proof.
   unfold is_true. apply prop_ext. auto. intro. discriminate.
 Qed.
 
-Axiom prop_degeneracy : forall A:Prop, A = True \/ A = False.
-
 Lemma Prop_bool_eq (P : Prop) : P = @COND bool P true false.
 Proof.
-  assert (P = True \/ P = False). apply prop_degeneracy. destruct H.
+  assert (P = True \/ P = False). apply prop_degen. destruct H.
   rewrite H. rewrite (COND_True bool true false). rewrite is_true_of_true. reflexivity.
   rewrite H. rewrite (COND_False bool true false). rewrite is_true_of_false. reflexivity.
 Qed. 
